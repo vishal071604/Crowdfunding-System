@@ -4,7 +4,7 @@ from flask_cors import CORS # React/Node backend to access Flask API
 import joblib # save ML model load ML model
 import numpy as np  # Used to create ML input arrays.
 
-app = Flask(__name__) # 
+app = Flask(__name__) #  Initialize Flask app
 
 CORS(app)
 

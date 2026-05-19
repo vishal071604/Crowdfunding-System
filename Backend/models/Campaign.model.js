@@ -27,7 +27,7 @@ const campaignSchema = new mongoose.Schema(
       default: 0,
     },
 
-    Image: {
+    image: {
       type: String,
       default: "",
     },
@@ -35,18 +35,12 @@ const campaignSchema = new mongoose.Schema(
     creator: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
     },
 
     status: {
       type: String,
-      enum: ["active", "inactive"],
+      enum: ["active", "inactive", "completed"],
       default: "active",
-    },
-
-    isSuspicious: {
-      type: Boolean,
-      default: false,
     },
   },
   {
@@ -54,8 +48,9 @@ const campaignSchema = new mongoose.Schema(
   }
 );
 
-const Campaign =
-  mongoose.models.Campaign ||
-  mongoose.model("Campaign", campaignSchema);
+const Campaign = mongoose.model(
+  "Campaign",
+  campaignSchema
+);
 
 export default Campaign;

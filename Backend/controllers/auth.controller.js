@@ -2,68 +2,85 @@ import User from "../models/User.model.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-// Sign up a new user
+// SIGNUP
 export const signUp = async (req, res) => {
   try {
-    const { name, email, password, role, isBlocked } = req.body;
+    const { name, email, password } = req.body;
 
-    if (!email || !password || !name) {
-      return res.status(400).json({ message: "All fields are required" });
+    // CHECK FIELDS
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
 
+    // CHECK USER
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({
+        message: "User already exists",
+      });
     }
 
+    // HASH PASSWORD
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    // CREATE USER
+    const user = await User.create({
       name,
       email,
       password: hashedPassword,
-      role:"user",
+      role: email === "admin@gmail.com" ? "admin" : "user",
       isBlocked: false,
     });
 
-    res
-      .status(201)
-      .json({ message: "User created successfully", user: newUser });
+    return res.status(201).json({
+      message: "User created successfully",
+      user,
+    });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// Log in an existing user
+// LOGIN
 export const logIn = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // CHECK FIELDS
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: `Email and Password are requested` });
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
 
-    const alreadyExistingUser = await User.findOne({ email });
+    // FIND USER
+    const user = await User.findOne({ email });
 
-    if (!alreadyExistingUser) {
-      return res.status(400).json({ message: `User doesn't exist` });
+    if (!user) {
+      return res.status(400).json({
+        message: "User not found",
+      });
     }
 
-    const isPasswordCorrect = await bcrypt.compare(
-      password,
-      alreadyExistingUser.password,
-    );
+    // CHECK PASSWORD
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    if (!isPasswordCorrect) {
-      return res.status(400).json({ message: `Invalid credentials` });
+    if (!isMatch) {
+      return res.status(400).json({
+        message: "Invalid credentials",
+      });
     }
 
+    // TOKEN
     const token = jwt.sign(
       {
-        id: alreadyExistingUser._id,
-        role: alreadyExistingUser.role,
+        id: user._id,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       {
@@ -75,46 +92,34 @@ export const logIn = async (req, res) => {
       .cookie("token", token, {
         httpOnly: true,
         secure: false,
-        sameSite: "strict",
+        sameSite: "lax",
       })
       .status(200)
-      .json({ message: "Logged in successfully", user:alreadyExistingUser._id,
-    name: alreadyExistingUser.name,
-    email: alreadyExistingUser.email,
-    role: alreadyExistingUser.role
+      .json({
+        message: "Login successful",
+        user,
       });
-
   } catch (error) {
-    return res.status(500).json({ message: `server error ${error.message}` });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// Log out a user
-export const logOut = async (req, res) => {
-  try {
-    res.clearCookie("token");
-    return res.status(200).json({
-      message: "Logout successful",
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      message: "Server Error",
-    });
-  }
+export const logOut = (req, res) => {
+  res.clearCookie("token").status(200).json({
+    message: "Logout successful",
+  });
 };
 
 export const profile = async (req, res) => {
   try {
-    // get logged in user
-    const user = await User.findById(req.user.id).select("-password"); // exclude password from response
+    const user = await User.findById(req.user.id).select("-password");
 
     return res.status(200).json(user);
   } catch (error) {
-    console.log(error);
-
     return res.status(500).json({
-      message: "Server Error",
+      message: error.message,
     });
   }
 };

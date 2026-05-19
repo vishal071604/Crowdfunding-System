@@ -88,9 +88,7 @@ export const updateAnomalyStatus = async (req, res) => {
 // DELETE anomaly
 export const deleteAnomaly = async (req, res) => {
   try {
-    const { id } = req.params;
-
-    const anomaly = await Anomaly.findByIdAndDelete(id);
+    const anomaly = await Anomaly.findById(req.params.id);
 
     if (!anomaly) {
       return res.status(404).json({
@@ -98,13 +96,14 @@ export const deleteAnomaly = async (req, res) => {
       });
     }
 
+    await Anomaly.findByIdAndDelete(req.params.id);
+
     return res.status(200).json({
       message: "Anomaly deleted successfully",
     });
   } catch (error) {
     return res.status(500).json({
-      message: "Server Error",
-      error: error.message,
+      message: error.message,
     });
   }
 };

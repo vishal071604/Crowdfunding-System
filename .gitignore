@@ -1,4 +1,7 @@
 node_modules
 .env
-build
 dist
+build
+__pycache__
+*.pyc
+model.pkl

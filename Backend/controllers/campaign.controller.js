@@ -1,12 +1,14 @@
-import Campaign from "../models/campaign.model.js";
+import Campaign from "../models/Campaign.model.js";
 
-// CREATE campaign
+// CREATE CAMPAIGN
 export const createCampaign = async (req, res) => {
   try {
     const { title, description, category, targetAmount, image } = req.body;
 
-    if (!title || !description || !category || !targetAmount || image) {
-      return res.status(400).json({ message: "All fields are required" });
+    if (!title || !description || !category || !targetAmount) {
+      return res.status(400).json({
+        message: "All fields are required",
+      });
     }
 
     const campaign = await Campaign.create({
@@ -18,7 +20,6 @@ export const createCampaign = async (req, res) => {
       raisedAmount: 0,
       creator: req.user.id,
       status: "active",
-      isSuspicious: false,
     });
 
     return res.status(201).json({
@@ -26,24 +27,30 @@ export const createCampaign = async (req, res) => {
       campaign,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// GET all active campaigns
+// GET ALL CAMPAIGNS
 export const getAllCampaigns = async (req, res) => {
   try {
-    const campaigns = await Campaign.find({ status: "active" })
+    const campaigns = await Campaign.find()
       .populate("creator", "name email")
       .sort({ createdAt: -1 });
 
-    return res.status(200).json({ campaigns });
+    return res.status(200).json({
+      campaigns,
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// GET single campaign
+// GET SINGLE CAMPAIGN
 export const getSingleCampaign = async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.params.id).populate(
@@ -52,27 +59,35 @@ export const getSingleCampaign = async (req, res) => {
     );
 
     if (!campaign) {
-      return res.status(404).json({ message: "Campaign not found" });
+      return res.status(404).json({
+        message: "Campaign not found",
+      });
     }
 
-    return res.status(200).json({ campaign });
+    return res.status(200).json({
+      campaign,
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// UPDATE campaign
+// UPDATE CAMPAIGN
 export const updateCampaign = async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.params.id);
 
     if (!campaign) {
-      return res.status(404).json({ message: "Campaign not found" });
+      return res.status(404).json({
+        message: "Campaign not found",
+      });
     }
 
     if (campaign.creator.toString() !== req.user.id) {
       return res.status(403).json({
-        message: "You are not allowed to update this campaign",
+        message: "Unauthorized",
       });
     }
 
@@ -87,48 +102,54 @@ export const updateCampaign = async (req, res) => {
       campaign: updatedCampaign,
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// SOFT DELETE campaign
+// DELETE CAMPAIGN
 export const deleteCampaign = async (req, res) => {
   try {
     const campaign = await Campaign.findById(req.params.id);
 
     if (!campaign) {
-      return res.status(404).json({ message: "Campaign not found" });
-    }
-
-    if (
-      campaign.creator.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
-      return res.status(403).json({
-        message: "You are not allowed to delete this campaign",
+      return res.status(404).json({
+        message: "Campaign not found",
       });
     }
 
-    campaign.status = "inactive";
-    await campaign.save();
+    if (campaign.creator.toString() !== req.user.id) {
+      return res.status(403).json({
+        message: "Unauthorized",
+      });
+    }
+
+    await Campaign.findByIdAndDelete(req.params.id);
 
     return res.status(200).json({
       message: "Campaign deleted successfully",
     });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };
 
-// GET logged-in user's campaigns
+// GET MY CAMPAIGNS
 export const getMyCampaigns = async (req, res) => {
   try {
     const campaigns = await Campaign.find({
       creator: req.user.id,
     }).sort({ createdAt: -1 });
 
-    return res.status(200).json({ campaigns });
+    return res.status(200).json({
+      campaigns,
+    });
   } catch (error) {
-    return res.status(500).json({ message: "Server Error" });
+    return res.status(500).json({
+      message: error.message,
+    });
   }
 };

@@ -94,26 +94,41 @@ export const donate = async (req, res) => {
 };
 
 // GET DONATIONS BY CAMPAIGN
-export const getDonationsByCampaign = async (req, res) => {
+export const getDonationById = async (
+  req,
+  res
+) => {
   try {
-    const { campaignId } = req.params;
 
-    const donations = await Donation.find({ campaign: campaignId })
-      .populate("donor", "name email")
-      .sort({ createdAt: -1 });
+    const donation = await Donation.findById(
+      req.params.id
+    )
+      .populate(
+        "donor",
+        "name email"
+      )
+      .populate(
+        "campaign",
+        "title category targetAmount"
+      );
+
+    if (!donation) {
+      return res.status(404).json({
+        message: "Donation not found",
+      });
+    }
 
     return res.status(200).json({
-      message: "Donations retrieved successfully",
-      donations,
+      donation,
     });
+
   } catch (error) {
+
     return res.status(500).json({
-      message: "Server Error",
-      error: error.message,
+      message: error.message,
     });
   }
 };
-
 // GET MY DONATIONS
 export const getMyDonations = async (req, res) => {
   try {

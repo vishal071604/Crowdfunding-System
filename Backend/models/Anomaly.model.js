@@ -2,44 +2,44 @@ import mongoose from "mongoose";
 
 const anomalySchema = new mongoose.Schema(
   {
-    type: { // Type of anomaly (e.g., donation, campaign, user)
+    type: {
       type: String,
       enum: ["donation", "campaign", "user"],
       required: true,
     },
 
-    reason: { // Reason for flagging the anomaly
+    reason: {
       type: String,
       required: true,
     },
 
-    severity: { // Severity level of the anomaly
+    severity: {
       type: String,
       enum: ["low", "medium", "high"],
       default: "low",
     },
 
-    score: { // Numerical score indicating the likelihood of fraud (0-100)
+    score: {
       type: Number,
       default: 0,
     },
 
-    user: { // Reference to the User model (if applicable)
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
 
-    campaign: { // Reference to the Campaign model (if applicable)
+    campaign: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Campaign",
     },
 
-    donation: { // Reference to the Donation model (if applicable)
+    donation: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Donation",
     },
 
-    status: { // Status of the anomaly (e.g., pending review, reviewed, resolved)
+    status: {
       type: String,
       enum: ["pending", "reviewed", "resolved"],
       default: "pending",

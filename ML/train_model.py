@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 #testing data
 from sklearn.ensemble import RandomForestClassifier #This is your ML algorithm.
 from sklearn.metrics import accuracy_score #How accurate model predictions are
-import joblib 
+import joblib # Used to save the trained model to a file for later use.
 
 # LOAD DATASET
 data = pd.read_csv("dataset.csv")

@@ -2,7 +2,7 @@ import express from "express";
 
 import {
   donate,
-  getDonationsByCampaign,
+  getDonationById,
   getMyDonations,
 } from "../controllers/donation.controller.js";
 
@@ -15,9 +15,9 @@ router.get("/my", authMiddleware, getMyDonations);
 
 // GET donations by campaign
 router.get(
-  "/campaign/:campaignId",
+  "/:id",
   authMiddleware,
-  getDonationsByCampaign
+  getDonationById
 );
 
 // CREATE donation
