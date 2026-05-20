@@ -14,11 +14,7 @@ const router = express.Router();
 router.get("/my", authMiddleware, getMyDonations);
 
 // GET donations by campaign
-router.get(
-  "/:id",
-  authMiddleware,
-  getDonationById
-);
+router.get("/:id", authMiddleware, getDonationById);
 
 // CREATE donation
 router.post("/:campaignId", authMiddleware, donate);

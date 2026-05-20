@@ -18,9 +18,8 @@ export default function Login() {
         password,
       });
 
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
       toast.success(res.data.message);
+
       navigate("/dashboard");
     } catch (error) {
       toast.error(error.response?.data?.message || "Login failed");
@@ -33,10 +32,13 @@ export default function Login() {
         onSubmit={handleLogin}
         className="bg-slate-900 p-8 rounded-2xl w-full max-w-md border border-slate-800"
       >
-        <h1 className="text-3xl font-bold mb-6 text-center">Login</h1>
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          Login
+        </h1>
 
         <div className="mb-4">
           <label>Email</label>
+
           <input
             type="email"
             className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none"
@@ -49,6 +51,7 @@ export default function Login() {
 
         <div className="mb-6">
           <label>Password</label>
+
           <input
             type="password"
             className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none"

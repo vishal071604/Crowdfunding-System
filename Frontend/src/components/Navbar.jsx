@@ -1,21 +1,38 @@
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import API from "../api/axios";
 
 export default function Navbar() {
   const navigate = useNavigate();
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(null);
 
+  // GET LOGGED-IN USER FROM BACKEND
+  const fetchProfile = async () => {
+    try {
+      const res = await API.get("/auth/profile");
+      setUser(res.data);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // LOGOUT
   const handleLogout = async () => {
     try {
       await API.post("/auth/logout");
 
-      localStorage.removeItem("user");
+      setUser(null);
 
       toast.success("Logout successful");
 
-      navigate("/");
+      navigate("/", { replace: true });
     } catch (error) {
       toast.error("Logout failed");
     }
@@ -29,46 +46,28 @@ export default function Navbar() {
         </Link>
 
         <div className="flex flex-wrap items-center gap-4">
-          <Link
-            to="/dashboard"
-            className="text-slate-300 hover:text-white"
-          >
+          <Link to="/dashboard" className="text-slate-300 hover:text-white">
             Dashboard
           </Link>
 
-          <Link
-            to="/campaigns"
-            className="text-slate-300 hover:text-white"
-          >
+          <Link to="/campaigns" className="text-slate-300 hover:text-white">
             Campaigns
           </Link>
 
-          <Link
-            to="/create-campaign"
-            className="text-slate-300 hover:text-white"
-          >
+          <Link to="/create-campaign" className="text-slate-300 hover:text-white">
             Create Campaign
           </Link>
 
-          <Link
-            to="/my-campaigns"
-            className="text-slate-300 hover:text-white"
-          >
+          <Link to="/my-campaigns" className="text-slate-300 hover:text-white">
             My Campaigns
           </Link>
 
-          <Link
-            to="/my-donations"
-            className="text-slate-300 hover:text-white"
-          >
+          <Link to="/my-donations" className="text-slate-300 hover:text-white">
             My Donations
           </Link>
 
           {user?.role === "admin" && (
-            <Link
-              to="/admin"
-              className="text-red-400 hover:text-red-300"
-            >
+            <Link to="/admin" className="text-red-400 hover:text-red-300">
               Admin
             </Link>
           )}

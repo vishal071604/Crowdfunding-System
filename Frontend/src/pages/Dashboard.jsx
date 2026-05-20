@@ -1,8 +1,25 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
 import Navbar from "../components/Navbar";
+import API from "../api/axios";
 
 export default function Dashboard() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(null);
+
+  // GET LOGGED-IN USER FROM BACKEND
+  const fetchProfile = async () => {
+    try {
+      const res = await API.get("/auth/profile");
+      setUser(res.data);
+    } catch (error) {
+      setUser(null);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
   return (
     <>
@@ -60,6 +77,20 @@ export default function Dashboard() {
 
               <p className="text-slate-400">
                 Start your own crowdfunding campaign.
+              </p>
+            </Link>
+
+            {/* MY CAMPAIGNS */}
+            <Link
+              to="/my-campaigns"
+              className="bg-slate-900 p-6 rounded-2xl border border-slate-800 hover:border-yellow-500 transition"
+            >
+              <h2 className="text-xl font-semibold mb-2">
+                My Campaigns
+              </h2>
+
+              <p className="text-slate-400">
+                View campaigns created by you.
               </p>
             </Link>
 
