@@ -8,33 +8,45 @@ export default function CreateCampaign() {
 
   const navigate = useNavigate();
 
+  // STATES
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [targetAmount, setTargetAmount] = useState("");
   const [category, setCategory] = useState("");
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState("");
+
+  const [loading, setLoading] = useState(false);
 
   // CREATE CAMPAIGN
   const handleCreateCampaign = async (e) => {
+
     e.preventDefault();
 
     try {
 
-      const formData = new FormData();
-
-      formData.append("title", title);
-      formData.append("description", description);
-      formData.append("targetAmount", targetAmount);
-      formData.append("category", category);
-      formData.append("image", image);
+      setLoading(true);
 
       const res = await API.post(
-        "/campaign/create",
-        formData
+        "/campaigns/create",
+        {
+          title,
+          description,
+          targetAmount,
+          category,
+          image,
+        }
       );
 
       toast.success(res.data.message);
 
+      // CLEAR FORM
+      setTitle("");
+      setDescription("");
+      setTargetAmount("");
+      setCategory("");
+      setImage("");
+
+      // REDIRECT
       navigate("/campaigns");
 
     } catch (error) {
@@ -43,6 +55,10 @@ export default function CreateCampaign() {
         error.response?.data?.message ||
         "Failed to create campaign"
       );
+
+    } finally {
+
+      setLoading(false);
     }
   };
 
@@ -51,81 +67,99 @@ export default function CreateCampaign() {
 
       <form
         onSubmit={handleCreateCampaign}
-        className="bg-slate-900 p-8 rounded-2xl w-full max-w-xl border border-slate-800"
+        className="bg-slate-900 p-8 rounded-2xl w-full max-w-2xl border border-slate-800 shadow-xl"
       >
 
-        <h1 className="text-3xl font-bold mb-6 text-center">
+        {/* HEADING */}
+        <h1 className="text-3xl font-bold text-center mb-8">
           Create Campaign
         </h1>
 
         {/* TITLE */}
-        <div className="mb-4">
+        <div className="mb-5">
 
-          <label>Title</label>
+          <label className="block mb-2 text-slate-300">
+            Campaign Title
+          </label>
 
           <input
             type="text"
             placeholder="Enter campaign title"
-            className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none"
+            className="w-full p-3 rounded-xl bg-slate-800 outline-none border border-slate-700 focus:border-blue-500"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            required
           />
 
         </div>
 
         {/* DESCRIPTION */}
-        <div className="mb-4">
+        <div className="mb-5">
 
-          <label>Description</label>
+          <label className="block mb-2 text-slate-300">
+            Description
+          </label>
 
           <textarea
-            placeholder="Enter description"
-            className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none h-32"
+            placeholder="Enter campaign description"
+            className="w-full p-3 rounded-xl bg-slate-800 outline-none border border-slate-700 focus:border-blue-500 h-36 resize-none"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            required
           />
 
         </div>
 
         {/* TARGET AMOUNT */}
-        <div className="mb-4">
+        <div className="mb-5">
 
-          <label>Target Amount</label>
+          <label className="block mb-2 text-slate-300">
+            Target Amount
+          </label>
 
           <input
             type="number"
             placeholder="Enter target amount"
-            className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none"
+            className="w-full p-3 rounded-xl bg-slate-800 outline-none border border-slate-700 focus:border-blue-500"
             value={targetAmount}
             onChange={(e) => setTargetAmount(e.target.value)}
+            required
           />
 
         </div>
 
         {/* CATEGORY */}
-        <div className="mb-4">
+        <div className="mb-5">
 
-          <label>Category</label>
+          <label className="block mb-2 text-slate-300">
+            Category
+          </label>
 
           <input
             type="text"
-            placeholder="Education / Medical / Startup"
-            className="w-full mt-2 p-3 rounded-xl bg-slate-800 outline-none"
+            placeholder="Medical / Education / Startup"
+            className="w-full p-3 rounded-xl bg-slate-800 outline-none border border-slate-700 focus:border-blue-500"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            required
           />
 
         </div>
 
-        {/* IMAGE */}
-        <div className="mb-6">
+        {/* IMAGE URL */}
+        <div className="mb-8">
 
-          <label>Campaign Image</label>
+          <label className="block mb-2 text-slate-300">
+            Campaign Image URL
+          </label>
 
           <input
-            type="file"
-            className="w-full mt-2"
-            onChange={(e) => setImage(e.target.files[0])}
+            type="text"
+            placeholder="Paste image URL"
+            className="w-full p-3 rounded-xl bg-slate-800 outline-none border border-slate-700 focus:border-blue-500"
+            value={image}
+            onChange={(e) => setImage(e.target.value)}
+            required
           />
 
         </div>
@@ -133,9 +167,14 @@ export default function CreateCampaign() {
         {/* BUTTON */}
         <button
           type="submit"
-          className="w-full bg-green-600 hover:bg-green-700 p-3 rounded-xl"
+          disabled={loading}
+          className="w-full bg-green-600 hover:bg-green-700 transition-all p-3 rounded-xl font-semibold"
         >
-          Create Campaign
+          {
+            loading
+            ? "Creating Campaign..."
+            : "Create Campaign"
+          }
         </button>
 
       </form>

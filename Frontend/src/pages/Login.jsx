@@ -18,6 +18,8 @@ export default function Login() {
         password,
       });
 
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
       toast.success(res.data.message);
       navigate("/dashboard");
     } catch (error) {
@@ -41,6 +43,7 @@ export default function Login() {
             placeholder="Enter email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </div>
 
@@ -52,10 +55,14 @@ export default function Login() {
             placeholder="Enter password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </div>
 
-        <button className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl">
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-xl"
+        >
           Login
         </button>
 

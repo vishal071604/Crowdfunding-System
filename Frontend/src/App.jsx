@@ -7,46 +7,84 @@ import Campaigns from "./pages/Campaigns";
 import CreateCampaign from "./pages/CreateCampaign";
 import CampaignDetails from "./pages/CampaignDetails";
 import MyDonations from "./pages/MyDonations";
+import MyCampaigns from "./pages/MyCampaigns";
 import AdminDashboard from "./pages/AdminDashboard";
+
+import ProtectedRoute from "./components/ProtectedRoute";
+import AdminRoute from "./components/AdminRoute";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* AUTH */}
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Login />} />
-
         <Route path="/register" element={<Register />} />
 
-        {/* DASHBOARD */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* PROTECTED ROUTES */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* CAMPAIGNS */}
-        <Route path="/campaigns" element={<Campaigns />} />
+        <Route
+          path="/campaigns"
+          element={
+            <ProtectedRoute>
+              <Campaigns />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/campaigns/:id"
+          element={
+            <ProtectedRoute>
+              <CampaignDetails />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/create-campaign"
-          element={<CreateCampaign />}
+          element={
+            <ProtectedRoute>
+              <CreateCampaign />
+            </ProtectedRoute>
+          }
         />
 
         <Route
-          path="/campaign/:id"
-          element={<CampaignDetails />}
+          path="/my-campaigns"
+          element={
+            <ProtectedRoute>
+              <MyCampaigns />
+            </ProtectedRoute>
+          }
         />
 
-        {/* DONATIONS */}
         <Route
           path="/my-donations"
-          element={<MyDonations />}
+          element={
+            <ProtectedRoute>
+              <MyDonations />
+            </ProtectedRoute>
+          }
         />
 
-        {/* ADMIN */}
+        {/* ADMIN ONLY */}
         <Route
           path="/admin"
-          element={<AdminDashboard />}
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
         />
-
       </Routes>
     </BrowserRouter>
   );

@@ -53,10 +53,8 @@ export const getAllCampaigns = async (req, res) => {
 // GET SINGLE CAMPAIGN
 export const getSingleCampaign = async (req, res) => {
   try {
-    const campaign = await Campaign.findById(req.params.id).populate(
-      "creator",
-      "name email"
-    );
+   const campaign = await Campaign.findById(req.params.id)
+  .populate("creator", "name email");
 
     if (!campaign) {
       return res.status(404).json({
