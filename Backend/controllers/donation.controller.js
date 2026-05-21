@@ -6,16 +6,25 @@ import Anomaly from "../models/Anomaly.model.js";
 
 import { generateTransactionHash } from "../utils/blockchain.js";
 
-// CREATE DONATION
+// CREATE DONATION WITH MOCK PAYMENT
 export const donate = async (req, res) => {
   try {
     const { campaignId } = req.params;
-    const { amount } = req.body || {};
+
+    const { amount, razorpayOrderId, razorpayPaymentId, razorpaySignature } =
+      req.body || {};
 
     // CHECK AMOUNT
     if (!amount || amount <= 0) {
       return res.status(400).json({
         message: "Valid amount is required",
+      });
+    }
+
+    // CHECK MOCK PAYMENT DETAILS
+    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+      return res.status(400).json({
+        message: "Payment details are required",
       });
     }
 
@@ -28,7 +37,7 @@ export const donate = async (req, res) => {
       });
     }
 
-    // CAMPAIGN CREATOR CANNOT DONATE TO OWN CAMPAIGN
+    // CREATOR CANNOT DONATE TO OWN CAMPAIGN
     if (campaign.creator.toString() === req.user.id) {
       return res.status(403).json({
         message: "You cannot donate to your own campaign",
@@ -58,24 +67,32 @@ export const donate = async (req, res) => {
     const transactionHash = generateTransactionHash(
       campaignId,
       req.user.id,
-      amount
+      amount,
     );
 
     // CREATE DONATION
     const donation = await Donation.create({
       campaign: campaignId,
       donor: req.user.id,
-      amount,
+      amount: Number(amount),
       paymentStatus: "success",
       anomalyStatus,
       transactionHash,
+      razorpayOrderId,
+      razorpayPaymentId,
+      razorpaySignature,
     });
 
     // UPDATE CAMPAIGN RAISED AMOUNT
     campaign.raisedAmount += Number(amount);
+
+    if (campaign.raisedAmount >= campaign.targetAmount) {
+      campaign.status = "completed";
+    }
+
     await campaign.save();
 
-    // CREATE ANOMALY RECORD IF SUSPICIOUS
+    // CREATE ANOMALY IF ML SAYS SUSPICIOUS
     if (anomalyStatus === "suspicious") {
       await Anomaly.create({
         type: "donation",

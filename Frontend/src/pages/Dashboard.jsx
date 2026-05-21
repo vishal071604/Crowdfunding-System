@@ -33,7 +33,7 @@ export default function Dashboard() {
             </h1>
 
             <p className="text-slate-400">
-              Welcome {user?.name || "User"} to AI Crowdfunding System
+              Welcome {user?.name || "User"} to Intelligent Crowdfunding System With ML-based Anomaly Detection And Blockchain-based Transparency.
             </p>
           </div>
 

@@ -2,38 +2,51 @@ import mongoose from "mongoose";
 
 const donationSchema = new mongoose.Schema(
   {
-    campaign: { // Reference to the Campaign model
+    campaign: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Campaign",
       required: true,
     },
 
-    donor: { // Reference to the User model
+    donor: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
-    amount: { // Donation amount in the smallest currency unit (e.g., cents)
+    amount: {
       type: Number,
       required: true,
     },
 
-    paymentStatus: { // Status of the payment
+    paymentStatus: {
       type: String,
       enum: ["success", "pending", "failed"],
       default: "success",
     },
 
-    anomalyStatus: { // Status indicating if the donation is safe or suspicious
+    anomalyStatus: {
       type: String,
       enum: ["safe", "suspicious"],
       default: "safe",
     },
 
-    transactionHash: { // Hash of the blockchain transaction (if applicable)
+    transactionHash: {
       type: String,
       default: "",
+    },
+
+    // MOCK PAYMENT FIELDS
+    razorpayOrderId: {
+      type: String,
+    },
+
+    razorpayPaymentId: {
+      type: String,
+    },
+
+    razorpaySignature: {
+      type: String,
     },
   },
   {

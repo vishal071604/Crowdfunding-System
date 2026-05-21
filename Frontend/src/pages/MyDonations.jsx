@@ -87,4 +87,5 @@ export default function MyDonations() {
       </div>
     </div>
   );
-}
+}// Rules
+

@@ -2,21 +2,26 @@ import express from "express";
 
 import {
   donate,
-  getDonationById,
   getMyDonations,
+  getDonationsByCampaign,
+  getDonationById,
 } from "../controllers/donation.controller.js";
 
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// GET logged-in user's donations
+// IMPORTANT: keep /my before /:id
 router.get("/my", authMiddleware, getMyDonations);
 
-// GET donations by campaign
+router.get(
+  "/campaign/:campaignId",
+  authMiddleware,
+  getDonationsByCampaign
+);
+
 router.get("/:id", authMiddleware, getDonationById);
 
-// CREATE donation
 router.post("/:campaignId", authMiddleware, donate);
 
 export default router;
