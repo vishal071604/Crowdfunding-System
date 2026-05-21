@@ -1,8 +1,8 @@
-# AI-Powered Crowdfunding Platform 🚀
+# ML-Powered Crowdfunding Platform 🚀
 
 An advanced MERN Stack crowdfunding platform integrated with:
 
-- AI/ML Fraud Detection
+- ML Fraud Detection
 - Blockchain-style Transaction Hashing
 - JWT Authentication
 - Campaign Management
@@ -28,9 +28,8 @@ An advanced MERN Stack crowdfunding platform integrated with:
 - Mongoose
 - JWT Authentication
 - Cookie Parser
-- Multer
 
-## AI/ML
+## ML
 - Python
 - Flask
 - Scikit-learn
@@ -225,7 +224,7 @@ GET /api/anomaly
 
 ---
 
-# AI Model Features
+# ML Model Features
 
 ML model uses:
 - Donation Amount
@@ -245,7 +244,7 @@ to predict:
 - Real Blockchain Integration
 - Payment Gateway
 - Live Analytics Dashboard
-- Advanced AI Fraud Detection
+- Advanced ML Fraud Detection
 - Email Notifications
 - Role-based Access Control
 
@@ -256,4 +255,4 @@ to predict:
 ## Vishal S Kalawad
 
 Full Stack MERN Developer
-AI & ML Enthusiast
+ML Enthusiast
