@@ -46,15 +46,14 @@ export const signUp = async (req, res) => {
   }
 };
 
-// LOGIN
 export const logIn = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // CHECK FIELDS
+    // CHECK EMPTY FIELDS
     if (!email || !password) {
       return res.status(400).json({
-        message: "All fields are required",
+        message: "Email and password are required",
       });
     }
 
@@ -63,20 +62,20 @@ export const logIn = async (req, res) => {
 
     if (!user) {
       return res.status(400).json({
-        message: "User not found",
+        message: "User does not exist",
       });
     }
 
     // CHECK PASSWORD
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
 
-    if (!isMatch) {
+    if (!isPasswordCorrect) {
       return res.status(400).json({
         message: "Invalid credentials",
       });
     }
 
-    // TOKEN
+    // CREATE JWT TOKEN
     const token = jwt.sign(
       {
         id: user._id,
@@ -88,24 +87,34 @@ export const logIn = async (req, res) => {
       },
     );
 
+    // CHECK PRODUCTION OR LOCAL
+    const isProduction = process.env.NODE_ENV === "production";
+
+    // SEND TOKEN IN COOKIE
     return res
       .cookie("token", token, {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",
+        secure: isProduction,
+        sameSite: isProduction ? "none" : "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
       })
       .status(200)
       .json({
         message: "Login successful",
-        user,
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
       });
   } catch (error) {
     return res.status(500).json({
-      message: error.message,
+      message: "Server error",
+      error: error.message,
     });
   }
 };
-
 export const logOut = (req, res) => {
   res.clearCookie("token").status(200).json({
     message: "Logout successful",
