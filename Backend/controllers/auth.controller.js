@@ -115,20 +115,23 @@ export const logIn = async (req, res) => {
     });
   }
 };
-export const logOut = (req, res) => {
-  res.clearCookie("token").status(200).json({
-    message: "Logout successful",
-  });
-};
 
-export const profile = async (req, res) => {
+export const logOut = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const isProduction = process.env.NODE_ENV === "production";
 
-    return res.status(200).json(user);
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+    });
+
+    return res.status(200).json({
+      message: "Logout successful",
+    });
   } catch (error) {
     return res.status(500).json({
-      message: error.message,
+      message: "Server Error",
     });
   }
 };
