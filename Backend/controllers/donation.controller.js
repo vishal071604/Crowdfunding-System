@@ -52,7 +52,7 @@ export const donate = async (req, res) => {
     }
 
     // ML API CALL
-    const mlResponse = await axios.post("http://127.0.0.1:5000/predict", {
+    const mlResponse = await axios.post(process.env.ML_API_URL, {
       amount: Number(amount),
       targetAmount: campaign.targetAmount,
       raisedAmount: campaign.raisedAmount,
