@@ -16,28 +16,32 @@ import anomalyRoute from "./routes/anomaly.route.js";
 
 const app = express();
 
-
 // MIDDLEWARES
 app.use(express.json());
 
 app.use(cookieParser());
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://crowdfunding-system.vercel.app",
+  "https://crowdfunding-system-77e2g66i5-vishal-s-projects-87ed78d3.vercel.app",
+];
+
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "https://crowdfunding-system.vercel.app",
-      ];
-
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app")
+      ) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
-  })
+  }),
 );
 
 // TEST ROUTE
